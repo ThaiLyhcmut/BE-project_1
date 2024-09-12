@@ -12,10 +12,12 @@ const ProductScheme = new mongoose.Schema({
   deleted: Boolean
 })
 
+
 const Product = mongoose.model(
   'Product',
   ProductScheme,
   'products'
 )
+
 
 module.exports = Product
