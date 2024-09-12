@@ -1,0 +1,70 @@
+extends ../../layouts/default.pug
+include ../../mixins/box-filter.pug
+block main
+  h1 Danh sách sản phẩm
+
+  .card
+    .card-header Bo loc 
+    .card-body
+      .row 
+        .col-4
+          +box-filter([
+            {
+              label: "all",
+              value: ""
+            },
+            {
+              label: "active",
+              value: "active"
+            },
+            {
+              label: "inactive",
+              value: "inactive"
+            }
+          ])
+        .col-8 
+          include ../../partials/form-search.pug
+  .card
+    .card-header Danh sach
+    .card-body
+      table.table.table-hover.table-sm
+        thead
+          tr
+            th STT
+            th Hình ảnh
+            th Tiêu đề
+            th Giá
+            th Trạng thái
+            th Hành động
+
+        tbody
+          each item,index in products
+            tr 
+              td #{index+1}
+              td
+                img(
+                  src=item.thumbnail
+                  alt=item.title
+                  width="100px"
+                  height="auto"
+                )
+              td #{item.title}
+              td #{(item.price*(1-item.discountPercentage/100)).toFixed(2)}$
+              td
+                a(href="#" class=`badge badge-${item.status == "active" ? "success" : "danger"}`) #{item.status}
+              td
+                button(class="btn btn-warning btn-sm") Sửa
+                button(class="btn btn-danger btn-sm ml-1") Xóa
+  nav(class="mt-3")
+    ul.justify-content-center.pagination
+      //- li.page-item
+      //-   button.page-link Trang truoc
+      if(currentPage > 1)
+        li.page-item
+          button.page-link(button-pagination=currentPage-1).text-dark Back
+      -for (var i = 1; i <= total_page; i++)
+        li.page-item
+          button.page-link.text-dark(button-pagination=i class=`${i == currentPage?"bg-primary":""}`) #{i}
+      if(currentPage < total_page)
+        li.page-item
+          button.page-link.text-dark(button-pagination=currentPage+1) Next
