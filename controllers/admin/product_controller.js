@@ -40,3 +40,52 @@ module.exports.index = async (req,res) => {
   //   Pagetitle: "Trang danh sach san pham"
   // })
 }
+
+module.exports.changeStatus = async (req, res) => {
+  await Product.updateOne({
+    _id: req.body.id
+  }, {
+    status: req.body.status
+  })
+
+  res.json({
+    code: "Success",
+    massage: "Doi Trang Thai Thanh Cong"
+  })
+}
+
+module.exports.changeMulti = async (req, res) => {
+  console.log(req.body)
+
+  switch(req.body.status){
+    case "delete":
+      await Product.updateMany({
+        _id: req.body.id,
+      }, {
+        deleted: true
+      })
+      break;
+    default:
+      await Product.updateMany({
+        _id: req.body.id
+      }, {
+        status: req.body.status
+      })
+  }
+  res.json({
+    code: "Success",
+    massage: "Doi Trang Thai Thanh Cong"
+  })
+}
+
+module.exports.delete = async (req, res) => {
+  await Product.updateOne({
+    _id: req.body.id
+  }, {
+    deleted: true
+  })
+  res.json({
+    code: "Success",
+    massage: "Doi Trang Thai Thanh Cong"
+  })
+}

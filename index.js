@@ -4,6 +4,7 @@ const database = require ("./config/database")
 const express = require("express");
 const routeAdmin = require("./routes/admin/index_route");
 const routeClient = require("./routes/client/index_route");
+const bodyParser = require('body-parser')
 
 const app = express()
 
@@ -22,6 +23,9 @@ database.connect(process.env.MONGO_URL)
 
 app.set('views', './views')
 app.set('view engine', 'pug')
+
+
+app.use(bodyParser.json())
 
 // gọi hàm index truyền vào app
 routeAdmin(app)
