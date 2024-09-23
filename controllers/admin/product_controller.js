@@ -1,6 +1,5 @@
 const Product = require("../../models/product_model")
-
-
+const systemConfig = require("../../config/system")
 module.exports.index = async (req,res) => {
   const find = {
     deleted: false,
@@ -25,7 +24,7 @@ module.exports.index = async (req,res) => {
   }
   const skip = (page - 1)*limitItems
 
-  const products = await Product.find(find).limit(limitItems).skip(skip)
+  const products = await Product.find(find).limit(limitItems).skip(skip).sort({position: 1})
   const total_products = await Product.countDocuments(find)
   const total_page = parseInt((total_products + limitItems - 1)/limitItems)
   res.render("admin/pages/products/index", {
@@ -47,15 +46,13 @@ module.exports.changeStatus = async (req, res) => {
   }, {
     status: req.body.status
   })
-
+  req.flash('Success', "doi trang thai thanh cong")
   res.json({
     code: "Success",
-    massage: "Doi Trang Thai Thanh Cong"
   })
 }
 
 module.exports.changeMulti = async (req, res) => {
-  console.log(req.body)
 
   switch(req.body.status){
     case "delete":
@@ -87,5 +84,85 @@ module.exports.delete = async (req, res) => {
   res.json({
     code: "Success",
     massage: "Doi Trang Thai Thanh Cong"
+  })
+}
+
+module.exports.changePosition = async (req, res) => {
+  await Product.updateOne({
+    _id: req.body.id
+  }, {
+    position: parseInt(req.body.position)
+  })
+
+  res.json({
+    code: "Success",
+    massage: "Doi Trang Thai Thanh Cong"
+  })
+}
+
+module.exports.create = async (req, res) => {
+  res.render("admin/pages/products/create", {
+    Pagetitle: "Trang them moi san pham",
+  })
+}
+module.exports.createPost = async (req, res) => {
+  req.body.price = parseInt(req.body.price)
+  req.body.discountPercentage = parseInt(req.body.discountPercentage)
+  req.body.stock = parseInt(req.body.stock)
+  if(!req.body.deleted){
+    req.body.deleted = "false"
+  }
+  if(!req.body.position){
+    const countRecord = await Product.countDocuments();
+    req.body.position = countRecord + 1
+  }
+  req.body.position = parseInt(req.body.position)
+  if(req.file){
+    req.body.thumbnail = `/uploads/${req.file.filename}`
+  }
+  const record = new Product(req.body)
+  await record.save()
+  res.redirect(`${systemConfig.prefixAdmin}/products`)
+}
+
+module.exports.edit = async (req, res) => {
+  const id = req.params.id
+  const productDetail = await Product.findOne({
+    _id: id,
+    deleted: false
+  })
+  res.render("admin/pages/products/edit", {
+    PageTitle: "Chinh sua san pham",
+    productDetail: productDetail
+  })
+}
+
+module.exports.editPatch = async (req, res) => {
+  req.body.price = parseInt(req.body.price)
+  req.body.discountPercentage = parseInt(req.body.discountPercentage)
+  req.body.stock = parseInt(req.body.stock)
+  req.body.position = parseInt(req.body.position)
+  if(req.file){
+    req.body.thumbnail = `/uploads/${req.file.filename}`
+  }
+  console.log(req.body)
+  const id = req.params.id
+  await Product.updateOne({
+    _id: id,
+    deleted: false
+  }, req.body)
+  req.flash("Success", "Cap nhat thanh cong")
+  res.redirect("back")
+}
+
+module.exports.detail = async (req, res) => {
+  const id = req.params.id
+  const productDetail = await Product.findOne({
+    _id: id,
+    deleted: false
+  })
+  res.render("admin/pages/products/detail", {
+    PageTitle: "chi tiet san pham",
+    product: productDetail
   })
 }

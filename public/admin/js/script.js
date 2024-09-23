@@ -153,3 +153,51 @@ if(buttonDelete.length > 0){
     })
   })
 }
+
+
+const inputPosition = document.querySelectorAll("[change-position]")
+if(inputPosition.length > 0){
+  inputPosition.forEach(item => {
+    item.addEventListener("change", () => {
+      const position = item.value
+      const path = item.getAttribute("data-path")
+      const id = item.getAttribute("item-id")
+      console.log(position)
+      fetch(path, {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "PATCH",
+        body: JSON.stringify({
+          id: id,
+          position: position
+        })
+      }).then(res => res.json()).then(res => {
+        console.log(res)
+      })
+    })
+  })
+}
+
+
+const alertMassage = document.querySelector("[alert-message]")
+if(alertMassage){
+  setTimeout(() => {
+    alertMassage.style.display = 'none'
+  },3000)
+}
+
+
+
+const upLoadImage = document.querySelector("[upload-image]")
+if(upLoadImage){
+  const upLoadImageInput = document.querySelector("[upload-image-input]")
+  const upLoadPreview = document.querySelector("[upload-image-preview]")
+  console.log(upLoadImageInput, upLoadPreview)
+  upLoadImageInput.addEventListener("change", (event) => {
+    const file = event.target.files[0]
+    if(file){
+      upLoadPreview.src = URL.createObjectURL(file)
+    }
+  })
+}

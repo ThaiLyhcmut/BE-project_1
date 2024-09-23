@@ -7,6 +7,12 @@ html(lang="en")
     link(rel="stylesheet", href="/admin/css/style.css")
     title #{Pagetitle}  
   body 
+    - if (messages.Success)
+      .message.Success.alert.alert-success.alert-message(alert-message)
+        span= messages.Success
+    - if (messages.danger)
+      .message.Success.alert.alert-danger.alert-message(alert-message)
+        span= messages.danger
     include ../partials/header.pug
     .body 
       include ../partials/sider.pug

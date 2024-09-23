@@ -2,11 +2,17 @@
 require('dotenv').config()
 const database = require ("./config/database")
 const express = require("express");
+const methodOverride = require('method-override')
 const routeAdmin = require("./routes/admin/index_route");
 const routeClient = require("./routes/client/index_route");
 const bodyParser = require('body-parser')
-
+const cookieParser = require('cookie-parser')
+const session = require('express-session')
+const flash = require('express-flash')
 const app = express()
+
+
+app.use(methodOverride('_method'))
 
 // bien toan cuc
 
@@ -26,6 +32,15 @@ app.set('view engine', 'pug')
 
 
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({
+  extended: false
+}))
+
+
+
+app.use(cookieParser('COOK'))
+app.use(session({ cookie: { maxAge: 60000 }}))
+app.use(flash())
 
 // gọi hàm index truyền vào app
 routeAdmin(app)
